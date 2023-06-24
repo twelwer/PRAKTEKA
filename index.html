@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>FIN.12RRR</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+      background-color: #f2f2f2;
+      color: #333333;
+    }
+    h1 {
+      font-size: 36px;
+      margin-top: 40px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 20px;
+      border: 1px solid #dddddd;
+      border-radius: 4px;
+      width: 300px;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 20px;
+      background-color: #4caf50;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 300ms;
+    }
+    button:hover {
+      background-color: #45a049;
+      transform: scale(1.01);
+    }
+    h2 {
+      font-size: 24px;
+      margin-top: 30px;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+    li {
+      margin-bottom: 10px;
+    }
+    a {
+      color: #0066cc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .no-results {
+      font-style: italic;
+      color: #777777;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Поиск</h1>
+  <input type="text" id="keywordInput" placeholder="Введите слово" />
+  <button onclick="sendRequest()">Искать</button>
+  <h2>Результаты:</h2>
+  <ul id="results"></ul>
+  <script>
+    function sendRequest() {
+      let xhr = new XMLHttpRequest();
+      xhr.open("POST", "/search", true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            let response = JSON.parse(xhr.responseText);
+            showResults(response);
+          } else {
+            console.error("Ошибка при выполнении запроса");
+          }
+        }
+      };
+      let keyword = document.getElementById("keywordInput").value;
+      let data = JSON.stringify({ keyword: keyword });
+      xhr.send(data);
+    }
+    function showResults(results) {
+      let resultsContainer = document.getElementById("results");
+      resultsContainer.innerHTML = "";
+      if (results.length === 0) {
+        let noResultsMsg = document.createElement("p");
+        noResultsMsg.textContent =
+          "По вашему запросу ничего не найдено";
+        noResultsMsg.classList.add("no-results");
+        resultsContainer.appendChild(noResultsMsg);
+      } else {
+        results.forEach(function (url) {
+          let link = document.createElement("a");
+          link.href = url;
+          link.textContent = url;
+          let listItem = document.createElement("li");
+          listItem.appendChild(link);
+          resultsContainer.appendChild(listItem);
+        });
+      }
+    }
+  </script>
+</body>
+</html>
